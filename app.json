@@ -2,7 +2,7 @@
   "expo": {
     "name": "kall",
     "slug": "kall",
-    "version": "1.1.0-beta4",
+    "version": "1.1.0-beta5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,7 +20,7 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.cakkacdev.kall",
-      "versionCode": 13
+      "versionCode": 14
     },
     "web": {
       "favicon": "./assets/favicon.png"
