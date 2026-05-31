@@ -6,6 +6,7 @@ import {
   Modal,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -15,9 +16,11 @@ import Slider from '@react-native-community/slider';
 import * as ImagePicker from 'expo-image-picker';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { analyzeFood } from '../lib/analyzeFood';
+import { recognizeOffline } from '../lib/offlineFood';
 import { searchFood, lookupBarcode } from '../lib/openfoodfacts';
 import {
   getDiary, saveDiary, getFavorites, addFavorite, removeFavoriteByDish,
+  getOfflineMode, saveOfflineMode,
 } from '../lib/storage';
 
 const MEALS = [
@@ -54,6 +57,13 @@ export default function AddFoodModal({ visible, onClose, apiKey, onSaved }) {
 
   const [perm, requestPerm] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
+
+  const [offline, setOffline] = useState(false);
+  useEffect(() => { getOfflineMode().then(setOffline); }, []);
+  async function toggleOffline(v) {
+    setOffline(v);
+    await saveOfflineMode(v);
+  }
 
   function goMenu() {
     setView('menu');
@@ -111,7 +121,9 @@ export default function AddFoodModal({ visible, onClose, apiKey, onSaved }) {
     if (r.canceled) return;
     setView('loading');
     try {
-      const result = await analyzeFood(r.assets[0].base64, apiKey);
+      const result = offline
+        ? await recognizeOffline(r.assets[0].uri)
+        : await analyzeFood(r.assets[0].base64, apiKey);
       openEdit(result, r.assets[0].uri, 'menu');
     } catch (e) {
       setError(e.message);
@@ -237,8 +249,20 @@ export default function AddFoodModal({ visible, onClose, apiKey, onSaved }) {
         {/* МЕНЮ */}
         {view === 'menu' && (
           <ScrollView contentContainerStyle={{ padding: 20, gap: 12 }}>
-            <MenuItem emoji="📷" title="Сфотографировать" desc="ИИ оценит калории по фото" onPress={() => pickPhoto(true)} />
-            <MenuItem emoji="🖼" title="Из галереи" desc="Выбрать готовое фото" onPress={() => pickPhoto(false)} />
+            <View style={styles.offlineRow}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.offlineTitle}>📴 Офлайн-режим (бета)</Text>
+                <Text style={styles.offlineDesc}>
+                  {offline
+                    ? 'Фото распознаёт модель на телефоне, без интернета и ключа'
+                    : 'Фото обрабатывает облачный ИИ — точнее и с составом'}
+                </Text>
+              </View>
+              <Switch value={offline} onValueChange={toggleOffline} trackColor={{ true: '#16a34a', false: '#334155' }} thumbColor="#fff" />
+            </View>
+
+            <MenuItem emoji="📷" title="Сфотографировать" desc={offline ? 'Распознать моделью на телефоне' : 'ИИ оценит калории по фото'} onPress={() => pickPhoto(true)} />
+            <MenuItem emoji="🖼" title="Из галереи" desc={offline ? 'Распознать готовое фото офлайн' : 'Выбрать готовое фото'} onPress={() => pickPhoto(false)} />
             <MenuItem emoji="▦" title="Штрихкод" desc="Сканировать упаковку" onPress={openBarcode} />
             <MenuItem emoji="🔍" title="Поиск по базе" desc="Найти продукт по названию" onPress={() => setView('search')} />
             <MenuItem emoji="⭐" title="Избранное" desc="Частые блюда в один тап" onPress={openFavorites} />
@@ -343,6 +367,12 @@ export default function AddFoodModal({ visible, onClose, apiKey, onSaved }) {
           <ScrollView contentContainerStyle={{ padding: 20 }}>
             {photo && <Image source={{ uri: photo }} style={styles.preview} />}
             <Text style={styles.dish}>{base.dish}</Text>
+            {base.source === 'offline' && (
+              <Text style={styles.offlineNote}>
+                📴 Офлайн-оценка (грубо). Калории прикинуты по типу блюда — поправь вес/блюдо вручную.
+                {base.alternatives && base.alternatives.length > 1 ? '\nПохожее: ' + base.alternatives.slice(1, 3).join(', ') : ''}
+              </Text>
+            )}
             <Text style={styles.kcal}>{scaled.calories} ккал</Text>
             <View style={styles.macrosRow}>
               <Macro label="Б" value={scaled.protein} color="#3b82f6" />
@@ -415,6 +445,10 @@ const styles = StyleSheet.create({
   headTitle: { color: '#f8fafc', fontSize: 20, fontWeight: '800' },
   headClose: { color: '#94a3b8', fontSize: 16, fontWeight: '700' },
 
+  offlineRow: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#0b1220', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#334155' },
+  offlineTitle: { color: '#f8fafc', fontSize: 15, fontWeight: '700' },
+  offlineDesc: { color: '#94a3b8', fontSize: 12, marginTop: 3, lineHeight: 16 },
+
   menuItem: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#1e293b', borderRadius: 16, padding: 18 },
   menuEmoji: { fontSize: 28 },
   menuTitle: { color: '#f8fafc', fontSize: 16, fontWeight: '700' },
@@ -438,6 +472,7 @@ const styles = StyleSheet.create({
 
   preview: { width: '100%', height: 180, borderRadius: 16, marginBottom: 14 },
   dish: { color: '#f8fafc', fontSize: 22, fontWeight: '800' },
+  offlineNote: { color: '#fbbf24', fontSize: 12, marginTop: 6, lineHeight: 17 },
   kcal: { color: '#22c55e', fontSize: 42, fontWeight: '900', marginVertical: 8 },
   macrosRow: { flexDirection: 'row', gap: 24, marginBottom: 8 },
 
