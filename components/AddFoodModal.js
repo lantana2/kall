@@ -18,6 +18,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { analyzeFood } from '../lib/analyzeFood';
 import { recognizeOffline } from '../lib/offlineFood';
 import { searchFood, lookupBarcode } from '../lib/openfoodfacts';
+import { searchLocal } from '../lib/foodDb';
 import {
   getDiary, saveDiary, getFavorites, addFavorite, removeFavoriteByDish,
   getOfflineMode, saveOfflineMode,
@@ -133,12 +134,19 @@ export default function AddFoodModal({ visible, onClose, apiKey, onSaved }) {
 
   // ── Поиск (динамический) ──
   async function runSearch(q) {
-    if (!q || q.trim().length < 2) { setResults([]); return; }
+    const query = (q || '').trim();
+    if (query.length < 2) { setResults([]); return; }
+    // Мгновенно показываем локальную базу (русские блюда/напитки).
+    const local = searchLocal(query);
+    setResults(local);
     setSearching(true);
     try {
-      setResults(await searchFood(q.trim()));
+      const off = await searchFood(query);
+      const seen = new Set(local.map((x) => x.dish.toLowerCase()));
+      const merged = [...local, ...off.filter((x) => !seen.has(x.dish.toLowerCase()))];
+      setResults(merged);
     } catch (e) {
-      setResults([]);
+      // оставляем локальные результаты
     } finally {
       setSearching(false);
     }

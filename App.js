@@ -6,6 +6,7 @@ import Home from './screens/Home';
 import Stats from './screens/Stats';
 import AddFoodModal from './components/AddFoodModal';
 import ApiKeyScreen from './components/ApiKeyScreen';
+import ErrorBoundary from './components/ErrorBoundary';
 import { getProfile, saveProfile, getApiKey, saveApiKey } from './lib/storage';
 import { setupNotifications } from './lib/notifications';
 
@@ -73,17 +74,19 @@ export default function App() {
       ) : (
         <>
           <View style={{ flex: 1 }}>
-            {tab === 'home' ? (
-              <Home
-                profile={profile}
-                apiKey={apiKey}
-                onApiKey={setApiKey}
-                onEditProfile={() => setEditing(true)}
-                refreshKey={refreshKey}
-              />
-            ) : (
-              <Stats profile={profile} refreshKey={refreshKey} />
-            )}
+            <ErrorBoundary key={tab}>
+              {tab === 'home' ? (
+                <Home
+                  profile={profile}
+                  apiKey={apiKey}
+                  onApiKey={setApiKey}
+                  onEditProfile={() => setEditing(true)}
+                  refreshKey={refreshKey}
+                />
+              ) : (
+                <Stats profile={profile} refreshKey={refreshKey} />
+              )}
+            </ErrorBoundary>
           </View>
 
           {/* Нижняя панель с центральной кнопкой ➕ */}
