@@ -1,37 +1,36 @@
-# 🍎 Kall — calories from a photo
+# 🍎 Kall — калории по фото
 
-A React Native (Expo) mobile app: **take a photo of your food and an AI estimates
-calories and macros** (protein / fat / carbs). Works with a 12k-item offline food
-database for instant lookups and falls back to AI vision when you snap a picture.
+Мобильное приложение на React Native (Expo): **фоткаешь еду — ИИ оценивает калории
+и БЖУ** (белки / жиры / углеводы). Работает с офлайн-базой на 12 000 продуктов для
+мгновенного поиска и подключает AI vision, когда делаешь снимок.
 
-> Personal mobile project. Demonstrates Expo, the device camera pipeline,
-> on-device storage, an offline product database, and AI vision via an
-> OpenAI-compatible API.
+> Личный мобильный проект. Демонстрирует Expo, конвейер работы с камерой устройства,
+> локальное хранилище, офлайн-базу продуктов и AI vision через OpenAI-совместимый API.
 
-## ✨ Features
+## ✨ Возможности
 
-- 📷 **Snap & analyze** — photograph a meal, get calories + macros in seconds
-- 🤖 **AI vision** through [OpenRouter](https://openrouter.ai) (free vision models, auto-fallback between models on rate limits)
-- 📚 **Offline database** of ~12,000 Russian products (Open Food Facts, ODbL) for instant search without AI
-- 📊 **Daily stats** — track intake against a goal, with onboarding to set targets
-- 🔔 Local notifications / reminders
-- 🔑 **Bring-your-own-key** — the API key is entered in-app and stored on device (nothing hardcoded)
+- 📷 **Снял и проанализировал** — сфоткай блюдо и получи калории + БЖУ за секунды
+- 🤖 **AI vision** через [OpenRouter](https://openrouter.ai) (бесплатные vision-модели, авто-переключение между моделями при лимитах)
+- 📚 **Офлайн-база** ~12 000 российских продуктов (Open Food Facts, ODbL) — мгновенный поиск без ИИ
+- 📊 **Статистика за день** — учёт потребления относительно цели, с онбордингом для её настройки
+- 🔔 Локальные уведомления и напоминания
+- 🔑 **Свой ключ** — API-ключ вводится в приложении и хранится на устройстве (ничего не зашито в код)
 
-## 🧱 Tech stack
+## 🧱 Стек
 
-| Area | Tech |
+| Область | Технология |
 |------|------|
-| Framework | React Native + [Expo](https://expo.dev) (~SDK 56) |
-| Camera | `expo-camera`, `expo-image-picker`, `expo-image-manipulator` |
-| Storage | `@react-native-async-storage/async-storage` |
-| AI | OpenAI-compatible vision API (OpenRouter) |
-| Data | Open Food Facts offline export (ODbL) |
+| Фреймворк | React Native + [Expo](https://expo.dev) (~SDK 56) |
+| Камера | `expo-camera`, `expo-image-picker`, `expo-image-manipulator` |
+| Хранилище | `@react-native-async-storage/async-storage` |
+| ИИ | OpenAI-совместимый vision API (OpenRouter) |
+| Данные | офлайн-выгрузка Open Food Facts (ODbL) |
 
-## 🚀 Run it
+## 🚀 Запуск
 
-### Quick test (APK)
+### Быстрый тест (APK)
 
-Build a debug APK and install it on Android:
+Собрать debug-APK и установить на Android:
 
 ```bash
 cd android
@@ -39,32 +38,32 @@ cd android
 # -> android/app/build/outputs/apk/release/app-release.apk
 ```
 
-On first launch the app asks for an **API key**:
+При первом запуске приложение попросит **API-ключ**:
 
-1. Sign up free at <https://openrouter.ai>
-2. Create a key at <https://openrouter.ai/keys> (starts with `sk-or-v1-...`)
-3. Paste it in the app → it's saved on the device. Change it anytime via ⚙.
+1. Зарегистрируйся бесплатно на <https://openrouter.ai>
+2. Создай ключ на <https://openrouter.ai/keys> (начинается с `sk-or-v1-...`)
+3. Вставь его в приложение → он сохранится на устройстве. Сменить можно в любой момент через ⚙.
 
-### Development (Expo Go)
+### Разработка (Expo Go)
 
 ```bash
 npm install
 npx expo start
-# scan the QR code with Expo Go (Android) or the Camera app (iOS)
+# отсканируй QR-код приложением Expo Go (Android) или «Камерой» (iOS)
 ```
 
-## 📁 Project layout
+## 📁 Структура проекта
 
 ```
 kall/
-├── App.js                # root component / navigation
-├── config.js             # AI endpoint + model list (key is entered at runtime)
+├── App.js                # корневой компонент / навигация
+├── config.js             # AI-эндпоинт + список моделей (ключ вводится в рантайме)
 ├── screens/              # Home, Onboarding, Stats
-├── components/           # UI, including the API-key screen
-├── lib/                  # analyzeFood, calorie math, offline food DB, storage
-└── assets/               # icons & images
+├── components/           # UI, включая экран ввода API-ключа
+├── lib/                  # analyzeFood, расчёт калорий, офлайн-база продуктов, хранилище
+└── assets/               # иконки и изображения
 ```
 
-## ⚖️ License
+## ⚖️ Лицензия
 
-See [LICENSE](LICENSE). Food data from Open Food Facts under the ODbL.
+См. [LICENSE](LICENSE). Данные о продуктах — из Open Food Facts по лицензии ODbL.
