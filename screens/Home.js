@@ -174,8 +174,8 @@ export default function Home({ profile, apiKey, onApiKey, onEditProfile, refresh
         {/* Подпись автора */}
         <View style={styles.footer}>
           <Text style={styles.footerLine}>design · code · experience</Text>
-          <TouchableOpacity onPress={() => Linking.openURL('https://t.me/cakkac')}>
-            <Text style={styles.footerBrand}>cakkac</Text>
+          <TouchableOpacity onPress={() => Linking.openURL('https://github.com/lantana2')}>
+            <Text style={styles.footerBrand}>GitHub</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

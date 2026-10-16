@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const UA = 'KallApp/1.1 (offline db builder; contact: t.me/cakkac)';
+const UA = 'KallApp/1.1 (offline db builder)';
 const PAGES = 360;         // страниц по 100 — покрыть всю базу (~34.6к)
 const PAGE_SIZE = 100;
 const CYR = /[А-Яа-яЁё]/;
